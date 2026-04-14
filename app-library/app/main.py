@@ -5,7 +5,10 @@ from fastapi import (
 from faker import Faker
 #from fastapi.params import Body
 from pydantic import BaseModel
+from .db.database import get_db, engine
+from .db.models import Base
 
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 fake = Faker()

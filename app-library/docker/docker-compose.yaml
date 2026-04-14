@@ -1,0 +1,11 @@
+services:
+  db:
+    image: "mariadb:10.10"
+    restart: on-failure
+    env_file: $PWD/config/.db_env
+    ports:
+    - "3306:3306"
+    volumes:
+    - $PWD/bin/wait-for-it.sh:/tmp/wait-for-it.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "/tmp/wait-for-it.sh -h localhost -p 3306 || exit 1"]
