@@ -1,16 +1,22 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.expression import text
 from datetime import datetime
 from .database import Base
 
 class Author(Base):
     __tablename__ = "authors"
     id = Column(Integer, primary_key=True, index=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=True)
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        server_default=text("now()"),
+        nullable=True,
+    )
     name = Column(String(100), nullable=False)
     email = Column(String(50), nullable=False)
     age = Column(Integer, nullable=False)
-    active = Column(Boolean, nullable=False, default=True)
+    active = Column(Boolean, nullable=False, server_default=text("TRUE"))
     books = relationship("Book", back_populates="author")
 
 class Category(Base):
@@ -33,6 +39,7 @@ class Book(Base):
 
     author = relationship("Author", back_populates="books")
     category = relationship("Category", back_populates="books")
+    purchases = relationship("Purchase", back_populates="book")
 
 
 class Purchase(Base):
