@@ -3,19 +3,31 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, EmailStr, ConfigDict
 
-class AuthorCreate(BaseModel):
+
+class AuthorBase(BaseModel):
     name: str
     email: EmailStr  # Use EmailStr for email validation
     age: int
-    active: Optional[bool] = True  # Optional, with a default value
+    active: Optional[bool] = True
 
 
-# Pydantic model for returning an Author (output response)
-class AuthorResponse(BaseModel):
+class AuthorCreate(AuthorBase):
+    pass
+
+
+class AuthorUpdate(AuthorCreate):
+    pass
+
+
+class AuthorResponse(AuthorBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
     created_at: datetime
+
+
+class Book(BaseModel):
     name: str
-    email: EmailStr
-    age: int
-    active: bool
+    category: str
+    year: int
+    published: bool = True
+    expired: Optional[bool] = False

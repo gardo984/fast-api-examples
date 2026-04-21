@@ -4,7 +4,8 @@ from fastapi import (
     Depends,
 )
 from faker import Faker
-#from fastapi.params import Body
+# from fastapi.params import Body
+from sqlalchemy import inspect
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from .db.database import get_db, engine
@@ -14,6 +15,7 @@ from .db.models import (
 )
 from .schemas import (
     AuthorCreate,
+    AuthorUpdate,
     AuthorResponse,
 )
 
@@ -22,58 +24,61 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 fake = Faker()
 
-class Book(BaseModel):
-    name: str
-    category: str
-    year: int
-    published: bool = True
-    expired: Optional[bool] = False
 
-
-@app.get("/author", status_code=status.HTTP_200_OK)
-async def author_list(request: Request):
+@app.get(
+    "/author",
+    status_code=status.HTTP_200_OK,
+    response_model=List[AuthorResponse],
+)
+async def author_list(
+    request: Request,
+    db: Session = Depends(get_db),
+):
     print(f"Url: {request.url}, method: {request.method}")
     print(f"querystring: {dict(request.query_params)}")
-    items: List = [
-        dict(
-            name=fake.name(),
-            category=fake.currency_name(),
-            year=fake.random_int(min=1900, max=2026),
-        )
-        for item in range(1, 10)
-    ]
-    return {
-        "data": items
-    }
+    authors = db.query(Author).all()
+    return authors
 
-@app.get("/author/{author_id}", status_code=status.HTTP_200_OK)
-async def author_get_book(author_id: int):
-    items: Dict = dict(
-        author_id=author_id,
-        name=fake.name(),
-        category=fake.currency_name(),
-        year=fake.random_int(min=1900, max=2026),
-    )
-    return {
-        "data": items
-    }
+
+@app.get(
+    "/author/{author_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=AuthorResponse,
+)
+async def author_get_book(
+    request: Request,
+    author_id: int,
+    db: Session = Depends(get_db),
+):
+    print(f"Url: {request.url}, method: {request.method}")
+    print(f"Path args author_id: {author_id}")
+    author = db.query(Author).where(Author.id == author_id).one_or_none()
+    if not author:
+        print(f"Author does not exist authorId={author_id}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Author does not exist",
+        )
+    return author
+
 
 @app.post(
     "/author/",
     status_code=status.HTTP_201_CREATED,
     response_model=Union[AuthorResponse, List[AuthorResponse]],
 )
-async def author_create_item(
+async def author_create(
     request: Request,
     payload: Union[AuthorCreate | List[AuthorCreate]],
     db: Session = Depends(get_db),
 ):
     print(f"Url: {request.url}, method: {request.method}")
-    print(f"Payload: {payload}")
     authors_to_create: List[Author] = []
     if not isinstance(payload, List):
         payload = [payload]
 
+    decoded_data = [item.dict() for item in payload]
+    print(f"Payload: {decoded_data}")
     for author_data in payload:
         db_author = Author(
             name=author_data.name,
@@ -94,23 +99,60 @@ async def author_create_item(
         return authors_to_create[0]
 
 
-@app.delete("/author/{author_id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.put(
+    "/author/{author_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=AuthorResponse,
+)
+async def author_update(
+    request: Request,
+    author_id: int,
+    payload: AuthorUpdate,
+    db: Session = Depends(get_db),
+):
+    print(f"Url: {request.url}, method: {request.method}")
+    print(f"Payload: {payload.dict()}")
+    author = db.query(Author).where(Author.id == author_id).first()
+    if not author:
+        print(f"Author does not exist authorId: {author_id}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Author does no exist",
+        )
+
+    update_data = payload.dict()
+    for key, value in update_data.items():
+        setattr(author, key, value)
+
+    db.commit()
+    db.refresh(author)
+    print(f"Author successfully updated authorId:{author_id}")
+    return author
+
+
+@app.delete(
+    "/author/{author_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
 async def author_delete(
     request: Request,
     response: Response,
-    author_id: int
+    author_id: int,
+    db: Session = Depends(get_db),
 ):
     print(f"Url: {request.url}, method: {request.method}")
-    print(f"BookId: {author_id}")
+    print(f"Path args author_id: {author_id}")
 
-    message = f"Book {author_id} was removed successfully"
-    # hardcoding condition for testing purposes
-    if author_id == 10:
+    author = db.query(Author).where(Author.id == author_id).first()
+    if not author:
         # response.status_code = status.HTTP_404_NOT_FOUND
         # message = "Book does not exist"
+        print(f"Author does not exist authorId:{author_id}")
         raise HTTPException(
             detail=f"Book does not exist",
             status_code=status.HTTP_404_NOT_FOUND,
         )
 
-    return {"message": message}
+    db.delete(author)
+    print(f"Author removed successfully authorId:{author_id}")
+    return {}
