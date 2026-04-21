@@ -2,7 +2,75 @@ from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import text
 from datetime import datetime
+from sqlalchemy.orm import Session
 from .database import Base
+from typing import Union, List
+
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, nullable=False, primary_key=True,)
+    email = Column(String(60), nullable=False,)
+    password = Column(String(120), nullable=False,)
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        server_default=text("now()"),
+        nullable=True,
+    )
+
+    @classmethod
+    def authenticate_user(
+        cls, db: Session, email: str, password: str
+    ) -> bool:
+        user_instance = db.query(cls).where(cls.email == email).first()
+        if not user_instance:
+            return False
+        return user_instance.verify_password(password=password)
+
+    @classmethod
+    def get_password_hash(cls, value: str) -> str:
+        from pwdlib import PasswordHash
+
+        password_hash = PasswordHash.recommended()
+        return password_hash.hash(value)
+
+    @classmethod
+    def validate_users_existence(
+        cls, db: Session, user_list: Union[str, List[str]]
+    ) -> List[str]:
+        if not isinstance(user_list, List):
+            user_list = [user_list]
+
+        stmt = db.query(cls.email).where(cls.email.in_(user_list))
+        outcome = db.execute(stmt).scalars().all()
+        return outcome
+
+    def verify_password(self, password: str) -> str:
+        from pwdlib import PasswordHash
+
+        password_hash = PasswordHash.recommended()
+        hashed_password = password_hash.hash(password)
+        return self.password == hashed_password
+
+    @classmethod
+    def create_users(cls, db: Session, users: List) -> List:
+        users_to_create: List[cls] = []
+        for user_data in users:
+            user_data.password = cls.get_password_hash(user_data.password)
+            db_user = cls(**user_data.dict())
+            db.add(db_user)
+            users_to_create.append(db_user)
+
+        db.commit()
+        for user in users_to_create:
+            db.refresh(user)
+
+        if len(users_to_create) > 1:
+            return users_to_create
+        else:
+            return users_to_create[0]
+
 
 class Author(Base):
     __tablename__ = "authors"
@@ -19,6 +87,7 @@ class Author(Base):
     active = Column(Boolean, nullable=False, server_default=text("TRUE"))
     books = relationship("Book", back_populates="author")
 
+
 class Category(Base):
     __tablename__ = "categories"
     id = Column(Integer, primary_key=True, index=True)
@@ -27,6 +96,7 @@ class Category(Base):
     active = Column(Boolean, nullable=False, default=True)
 
     books = relationship("Book", back_populates="category")
+
 
 class Book(Base):
     __tablename__ = "books"
