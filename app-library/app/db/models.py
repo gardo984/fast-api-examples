@@ -5,6 +5,10 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from .database import Base
 from typing import Union, List
+from pwdlib import PasswordHash
+from pwdlib.hashers.bcrypt import BcryptHasher
+
+password_hash = PasswordHash([BcryptHasher()])
 
 
 class User(Base):
@@ -30,9 +34,6 @@ class User(Base):
 
     @classmethod
     def get_password_hash(cls, value: str) -> str:
-        from pwdlib import PasswordHash
-
-        password_hash = PasswordHash.recommended()
         return password_hash.hash(value)
 
     @classmethod
@@ -47,9 +48,6 @@ class User(Base):
         return outcome
 
     def verify_password(self, password: str) -> str:
-        from pwdlib import PasswordHash
-
-        password_hash = PasswordHash.recommended()
         hashed_password = password_hash.hash(password)
         return self.password == hashed_password
 
