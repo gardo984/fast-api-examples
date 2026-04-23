@@ -85,3 +85,16 @@ class UserResponse(UserBase):
     ) -> Dict[str, object]:
         serialized_data = handler(self)
         return serialized_data
+
+
+class LoginCredentials(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class LoginResponse(BaseModel):
+    access_token: str

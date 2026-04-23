@@ -4,11 +4,8 @@ from sqlalchemy.sql.expression import text
 from datetime import datetime
 from sqlalchemy.orm import Session
 from .database import Base
-from typing import Union, List
-from pwdlib import PasswordHash
-from pwdlib.hashers.bcrypt import BcryptHasher
-
-password_hash = PasswordHash([BcryptHasher()])
+from typing import Union, List, Tuple, Any
+from ..utils import hash_password, verify_password_hash
 
 
 class User(Base):
@@ -26,15 +23,18 @@ class User(Base):
     @classmethod
     def authenticate_user(
         cls, db: Session, email: str, password: str
-    ) -> bool:
+    ) -> Tuple[Any, bool]:
         user_instance = db.query(cls).where(cls.email == email).first()
         if not user_instance:
             return False
-        return user_instance.verify_password(password=password)
+        return (
+            user_instance,
+            user_instance.verify_password(password=password),
+        )
 
     @classmethod
     def get_password_hash(cls, value: str) -> str:
-        return password_hash.hash(value)
+        return hash_password(value)
 
     @classmethod
     def validate_users_existence(
@@ -48,8 +48,7 @@ class User(Base):
         return outcome
 
     def verify_password(self, password: str) -> str:
-        hashed_password = password_hash.hash(password)
-        return self.password == hashed_password
+        return verify_password_hash(password, self.password)
 
     @classmethod
     def create_users(cls, db: Session, users: List) -> List:
