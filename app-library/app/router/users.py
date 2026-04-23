@@ -51,7 +51,9 @@ async def user_create(
             detail=f"Users already registered: {','.join(user_exists)}"
         )
 
-    created_users: List[User] = User.create_users(db=db, users=payload)
+    created_users: List[User] = User.create_users(
+        db=db, users=payload, current_user=current_user,
+    )
     return created_users
 
 

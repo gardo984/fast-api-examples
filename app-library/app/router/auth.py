@@ -47,4 +47,5 @@ async def login(
     data = dict(user_id=instance.id, email=instance.email,)
     return dict(
         access_token=create_access_token(data),
+        token_type="bearer",
     )

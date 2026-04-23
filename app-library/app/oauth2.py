@@ -1,6 +1,6 @@
 
 import jwt
-from typing import Dict, Optional
+from typing import Dict, Optional, Annotated
 from datetime import timedelta, datetime, timezone
 from jwt.exceptions import InvalidTokenError
 from fastapi import Request, Depends, status, HTTPException
@@ -31,35 +31,44 @@ def create_access_token(
     return encoded_jwt
 
 
-def get_user(db: Session, email: str) -> Optional[User]:
-    user_instance = db.query(User).where(User.email == email).first()
-    return user_instance
-
-
-async def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db),
-):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+def verify_access_token(
+    token: str, credentials_exception: HTTPException,
+) -> TokenData:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email = payload.get("email")
         if email is None:
             raise credentials_exception
         token_data = TokenData(email=email)
+        return token_data
     except InvalidTokenError:
         raise credentials_exception
-    user = get_user(db=db, email=token_data.email)
+
+
+def get_user(db: Session, email: str) -> Optional[User]:
+    user_instance = db.query(User).where(User.email == email).first()
+    return user_instance
+
+
+async def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)],
+    db: Annotated[Session, Depends(get_db)],
+):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    token: TokenData = verify_access_token(token, credentials_exception)
+    user = get_user(db=db, email=token.email)
     if user is None:
         raise credentials_exception
     return user
 
 
-async def get_current_active_user(current_user: User = Depends(get_current_user)):
+async def get_current_active_user(
+    current_user: Annotated[User, Depends(get_current_user)]
+):
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user

@@ -70,8 +70,7 @@ class UserCreate(UserBase):
     password: str = Field(min_length=8, max_length=100)
 
 
-class UserResponse(UserBase):
-    model_config = ConfigDict(from_attributes=True)
+class UserDetail(UserBase):
     id: int
     created_at: datetime
 
@@ -86,15 +85,14 @@ class UserResponse(UserBase):
         serialized_data = handler(self)
         return serialized_data
 
+class UserResponse(UserDetail):
+    model_config = ConfigDict(from_attributes=True)
+    created_by: Optional[UserDetail] = None
+
 
 class LoginCredentials(BaseModel):
     email: EmailStr
     password: str
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
 
 
 class TokenData(BaseModel):
@@ -103,3 +101,4 @@ class TokenData(BaseModel):
 
 class LoginResponse(BaseModel):
     access_token: str
+    token_type: str

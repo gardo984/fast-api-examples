@@ -88,6 +88,7 @@ async def author_create(
             email=author_data.email,
             age=author_data.age,
             active=author_data.active,
+            created_by_id=current_user.id,
         )
         db.add(db_author)
         authors_to_create.append(db_author)

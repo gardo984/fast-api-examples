@@ -4,22 +4,45 @@ from sqlalchemy.sql.expression import text
 from datetime import datetime
 from sqlalchemy.orm import Session
 from .database import Base
-from typing import Union, List, Tuple, Any
+from typing import Union, List, Tuple, Any, Optional
 from ..utils import hash_password, verify_password_hash
 
 
-class User(Base):
-    __tablename__ = "users"
+class BaseStructure(Base):
+    __abstract__ = True
     id = Column(Integer, nullable=False, primary_key=True,)
-    email = Column(String(60), nullable=False,)
-    password = Column(String(120), nullable=False,)
     created_at = Column(
         DateTime,
         default=datetime.utcnow,
         server_default=text("now()"),
         nullable=True,
     )
+    created_by_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=True,
+        default=None,
+    )
+
+
+class User(BaseStructure):
+    __tablename__ = "users"
+    email = Column(String(60), nullable=False,)
+    password = Column(String(120), nullable=False,)
     disabled = Column(Boolean, default=False, nullable=False,)
+
+    # relationships
+    created_by = relationship(
+        "User",
+        back_populates="users",
+        remote_side="User.id",
+        foreign_keys="User.created_by_id",
+    )
+    users = relationship("User", back_populates="created_by")
+    authors = relationship("Author", back_populates="created_by")
+    categories = relationship("Category", back_populates="created_by")
+    books = relationship("Book", back_populates="created_by")
+    purchases = relationship("Purchase", back_populates="created_by")
 
     @classmethod
     def authenticate_user(
@@ -52,11 +75,18 @@ class User(Base):
         return verify_password_hash(password, self.password)
 
     @classmethod
-    def create_users(cls, db: Session, users: List) -> List:
+    def create_users(
+        cls, db: Session,
+        users: List,
+        current_user: Optional[Any] = None,
+    ) -> List:
         users_to_create: List[cls] = []
         for user_data in users:
             user_data.password = cls.get_password_hash(user_data.password)
-            db_user = cls(**user_data.dict())
+            payload = user_data.dict()
+            if current_user:
+                payload.update({"created_by_id": current_user.id})
+            db_user = cls(**payload)
             db.add(db_user)
             users_to_create.append(db_user)
 
@@ -70,49 +100,45 @@ class User(Base):
             return users_to_create[0]
 
 
-class Author(Base):
+class Author(BaseStructure):
     __tablename__ = "authors"
-    id = Column(Integer, primary_key=True, index=True)
-    created_at = Column(
-        DateTime,
-        default=datetime.utcnow,
-        server_default=text("now()"),
-        nullable=True,
-    )
     name = Column(String(100), nullable=False)
     email = Column(String(50), nullable=False)
     age = Column(Integer, nullable=False)
     active = Column(Boolean, nullable=False, server_default=text("TRUE"))
-    books = relationship("Book", back_populates="author")
+
+    # relationships
+    created_by = relationship("User", back_populates="authors")
+    books =  relationship("Book", back_populates="author")
 
 
-class Category(Base):
+class Category(BaseStructure):
     __tablename__ = "categories"
-    id = Column(Integer, primary_key=True, index=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=True)
     name = Column(String(100), nullable=False)
     active = Column(Boolean, nullable=False, default=True)
 
+    # relationships
+    created_by = relationship("User", back_populates="categories")
     books = relationship("Book", back_populates="category")
 
 
-class Book(Base):
+class Book(BaseStructure):
     __tablename__ = "books"
-    id = Column(Integer, primary_key=True, index=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=True)
     name = Column(String(100), nullable=False)
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
     author_id = Column(Integer, ForeignKey("authors.id"), nullable=False)
     active = Column(Boolean, nullable=False, default=True)
 
+    # relationships
+    created_by = relationship("User", back_populates="books")
     author = relationship("Author", back_populates="books")
     category = relationship("Category", back_populates="books")
     purchases = relationship("Purchase", back_populates="book")
 
 
-class Purchase(Base):
+class Purchase(BaseStructure):
     __tablename__ = "purchases"
-    id = Column(Integer, primary_key=True, index=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=True)
     book_id = Column(Integer, ForeignKey("books.id"), nullable=False)
+    # relationships
+    created_by = relationship("User", back_populates="purchases")
     book = relationship("Book", back_populates="purchases")
