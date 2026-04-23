@@ -19,6 +19,7 @@ class User(Base):
         server_default=text("now()"),
         nullable=True,
     )
+    disabled = Column(Boolean, default=False, nullable=False,)
 
     @classmethod
     def authenticate_user(

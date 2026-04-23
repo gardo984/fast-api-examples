@@ -16,6 +16,7 @@ from ..db.models import (
     Base,
     User,
 )
+from ..oauth2 import get_current_active_user
 
 
 router = APIRouter(
@@ -33,6 +34,7 @@ async def user_create(
     request: Request,
     payload: Union[UserCreate | List[UserCreate]],
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     print(f"Url: {request.url}, method: {request.method}")
     users_to_create: List[User] = []
@@ -61,6 +63,7 @@ async def user_create(
 async def user_list(
     request: Request,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     print(f"Url: {request.url}, method: {request.method}")
     print(f"querystring: {dict(request.query_params)}")
@@ -77,6 +80,7 @@ async def user_by_id(
     request: Request,
     user_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     print(f"Url: {request.url}, method: {request.method}")
     print(f"Path args user_id: {user_id}")
@@ -95,7 +99,10 @@ async def user_by_id(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def user_delete(
-    request: Request, user_id: int, db: Session = Depends(get_db),
+    request: Request,
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     print(f"Url: {request.url}, method: {request.method}")
     print(f"Path args user_id: {user_id}")

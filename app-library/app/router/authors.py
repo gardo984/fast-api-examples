@@ -15,7 +15,10 @@ from ..db.database import get_db, engine
 from ..db.models import (
     Base,
     Author,
+    User,
 )
+from ..oauth2 import get_current_active_user
+
 
 router = APIRouter(
     tags=["authors"]
@@ -30,6 +33,7 @@ router = APIRouter(
 async def author_list(
     request: Request,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     print(f"Url: {request.url}, method: {request.method}")
     print(f"querystring: {dict(request.query_params)}")
@@ -46,6 +50,7 @@ async def author_by_id(
     request: Request,
     author_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     print(f"Url: {request.url}, method: {request.method}")
     print(f"Path args author_id: {author_id}")
@@ -68,6 +73,7 @@ async def author_create(
     request: Request,
     payload: Union[AuthorCreate | List[AuthorCreate]],
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     print(f"Url: {request.url}, method: {request.method}")
     authors_to_create: List[Author] = []
@@ -106,6 +112,7 @@ async def author_update(
     author_id: int,
     payload: AuthorUpdate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     print(f"Url: {request.url}, method: {request.method}")
     print(f"Payload: {payload.dict()}")
@@ -137,6 +144,7 @@ async def author_update(
 )
 async def author_delete(
     request: Request, author_id: int, db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     print(f"Url: {request.url}, method: {request.method}")
     print(f"Path args author_id: {author_id}")
