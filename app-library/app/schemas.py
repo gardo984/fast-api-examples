@@ -129,7 +129,7 @@ class BookUpdate(BaseModel):
 class BookResponse(BookBase):
     model_config = ConfigDict(from_attributes=True)
 
-    category = None
+    id: int
     category: CategoryDetail
     author: AuthorDetail
     created_at: datetime
