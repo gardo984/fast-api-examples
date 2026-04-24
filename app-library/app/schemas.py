@@ -19,8 +19,10 @@ class AuthorBase(BaseModel):
     age: int
     active: Optional[bool] = True
 
+
 class AuthorDetail(AuthorBase):
     pass
+
 
 class AuthorCreate(AuthorBase):
     pass
@@ -74,7 +76,7 @@ class UserCreate(UserBase):
 
 class UserDetail(UserBase):
     id: int
-    #created_at: datetime
+    # created_at: datetime
 
     # @field_serializer('created_at')
     # def date_format(self, value: datetime) -> str:
@@ -113,10 +115,12 @@ class CategoryDetail(BaseModel):
     name: str
     active: bool
 
+
 class BookBase(BaseModel):
     name: str
     # author_id: int
     # category_id: int
+
 
 class BookCreate(BaseModel):
     pass
