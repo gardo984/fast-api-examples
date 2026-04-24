@@ -13,6 +13,7 @@ from .db.database import engine
 from .router import (
     users, authors, auth,
 )
+from .config import Settings
 
 Base.metadata.create_all(bind=engine)
 

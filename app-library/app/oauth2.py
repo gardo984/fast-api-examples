@@ -9,10 +9,11 @@ from sqlalchemy.orm import Session
 from .db.models import User
 from .db.database import get_db
 from .schemas import TokenData
+from .config import settings
 
-SECRET_KEY = "668fb2bc417590bf996ea22a78cbae6076052bdc310ede01b458088fbffe5064"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 5
+SECRET_KEY = settings.jwt_secret_key
+ALGORITHM = settings.jwt_algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = int(settings.jwt_expire_minutes)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
