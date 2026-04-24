@@ -109,7 +109,7 @@ class Author(BaseStructure):
 
     # relationships
     created_by = relationship("User", back_populates="authors")
-    books =  relationship("Book", back_populates="author")
+    books = relationship("Book", back_populates="author")
 
 
 class Category(BaseStructure):

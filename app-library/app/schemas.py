@@ -19,6 +19,8 @@ class AuthorBase(BaseModel):
     age: int
     active: Optional[bool] = True
 
+class AuthorDetail(AuthorBase):
+    pass
 
 class AuthorCreate(AuthorBase):
     pass
@@ -72,11 +74,11 @@ class UserCreate(UserBase):
 
 class UserDetail(UserBase):
     id: int
-    created_at: datetime
+    #created_at: datetime
 
-    @field_serializer('created_at')
-    def date_format(self, value: datetime) -> str:
-        return value.strftime("%Y-%m-%d %T")
+    # @field_serializer('created_at')
+    # def date_format(self, value: datetime) -> str:
+    #     return value.strftime("%Y-%m-%d %T")
 
     @model_serializer(mode="wrap")
     def serialize_model(
@@ -84,6 +86,7 @@ class UserDetail(UserBase):
     ) -> Dict[str, object]:
         serialized_data = handler(self)
         return serialized_data
+
 
 class UserResponse(UserDetail):
     model_config = ConfigDict(from_attributes=True)
@@ -102,3 +105,36 @@ class TokenData(BaseModel):
 class LoginResponse(BaseModel):
     access_token: str
     token_type: str
+
+
+# category
+
+class CategoryDetail(BaseModel):
+    name: str
+    active: bool
+
+class BookBase(BaseModel):
+    name: str
+    # author_id: int
+    # category_id: int
+
+class BookCreate(BaseModel):
+    pass
+
+
+class BookUpdate(BaseModel):
+    pass
+
+
+class BookResponse(BookBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    category = None
+    category: CategoryDetail
+    author: AuthorDetail
+    created_at: datetime
+    created_by: Optional[UserDetail]
+
+    @field_serializer('created_at')
+    def date_format(self, value: datetime) -> str:
+        return value.strftime("%Y-%m-%d %T")
