@@ -52,8 +52,7 @@ async def book_list(
     sorted_field = getattr(Book, sorted_by)
     books = (
         db.query(Book).order_by(sorted_field)
-        .limit(limit)
-        .offset(offset)
+        .limit(limit).offset(offset)
     )
     return books
 

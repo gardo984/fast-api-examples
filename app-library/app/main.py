@@ -15,7 +15,8 @@ from .router import (
 )
 from .config import Settings
 
-Base.metadata.create_all(bind=engine)
+# actually handled by alembic ORM manager
+# Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 # fake = Faker()

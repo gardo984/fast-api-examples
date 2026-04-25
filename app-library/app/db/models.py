@@ -156,3 +156,13 @@ class Purchase(BaseStructure):
     # relationships
     created_by = relationship("User", back_populates="purchases")
     book = relationship("Book", back_populates="purchases")
+
+
+class Likes(BaseStructure):
+    __tablename__ = "likes"
+    book_id = Column(Integer, ForeignKey("books.id"), nullable=False, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, primary_key=True)
+
+    # relationships
+    user = relationship("User", back_populates="likes")
+    book = relationship("Book", back_populates="likes")

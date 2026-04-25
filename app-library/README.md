@@ -29,7 +29,22 @@ deactivate
 
 ## DB Migrations
 
-
+- Run the app migrations:
+```sh
+alembic upgrade head
+```
+- To check the current revision:
+```sh
+alembic current
+```
+- To run a specific revision:
+```sh
+alembic upgrade <revision-id>
+```
+- To check all revisions(migrations):
+```sh
+alembic history
+```
 
 ## Unit Tests
 
