@@ -21,6 +21,7 @@ pip install -r requirements.txt
 ```sh
 uvicorn app.main:app --reload --reload-exclude venv
 ```
+- Open a browser and hit the url: http://localhost:8000/docs
 - (**Optional**) To get out of the virtualenv:
 ```sh
 deactivate

@@ -111,6 +111,13 @@ class Author(BaseStructure):
     created_by = relationship("User", back_populates="authors")
     books = relationship("Book", back_populates="author")
 
+    @classmethod
+    def validate_existence(
+        cls, instance_id: int, db: Session,
+    ) -> "Optional[Author]":
+        instance = db.query(cls).where(cls.id == instance_id).first()
+        return instance
+
 
 class Category(BaseStructure):
     __tablename__ = "categories"
@@ -120,6 +127,13 @@ class Category(BaseStructure):
     # relationships
     created_by = relationship("User", back_populates="categories")
     books = relationship("Book", back_populates="category")
+
+    @classmethod
+    def validate_existence(
+        cls, instance_id: int, db: Session,
+    ) -> "Optional[Category]":
+        instance = db.query(cls).where(cls.id == instance_id).first()
+        return instance
 
 
 class Book(BaseStructure):

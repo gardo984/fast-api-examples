@@ -20,7 +20,7 @@ from ..oauth2 import get_current_active_user
 
 
 router = APIRouter(
-    tags=["users"]
+    tags=["Users"]
 )
 # users
 

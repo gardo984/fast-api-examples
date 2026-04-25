@@ -21,7 +21,7 @@ class AuthorBase(BaseModel):
 
 
 class AuthorDetail(AuthorBase):
-    pass
+    id: int
 
 
 class AuthorCreate(AuthorBase):
@@ -111,22 +111,49 @@ class LoginResponse(BaseModel):
 
 # category
 
-class CategoryDetail(BaseModel):
+class CategoryBase(BaseModel):
     name: str
-    active: bool
+    active: Optional[bool] = True
+
+
+class CategoryDetail(CategoryBase):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+
+
+class CategoryCreate(CategoryBase):
+    pass
+
+
+class CategoryUpdate(CategoryBase):
+    pass
+
+
+class CategoryResponse(CategoryDetail):
+    model_config = ConfigDict(from_attributes=True)
+
+    created_at: datetime
+    created_by: Optional[UserDetail]
+
+    @field_serializer('created_at')
+    def date_format(self, value: datetime) -> str:
+        return value.strftime("%Y-%m-%d %T")
+
+# books
 
 
 class BookBase(BaseModel):
     name: str
-    # author_id: int
-    # category_id: int
+    active: bool
 
 
-class BookCreate(BaseModel):
-    pass
+class BookCreate(BookBase):
+    author_id: int
+    category_id: int
+    active: Optional[bool] = True
 
 
-class BookUpdate(BaseModel):
+class BookUpdate(BookCreate):
     pass
 
 

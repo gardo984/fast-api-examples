@@ -10,7 +10,7 @@ from ..db.models import User
 from ..schemas import LoginCredentials, LoginResponse
 from ..oauth2 import create_access_token
 
-router = APIRouter(tags=["authentication"])
+router = APIRouter(tags=["Authentication"])
 
 
 @router.post(

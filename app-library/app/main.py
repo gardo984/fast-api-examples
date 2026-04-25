@@ -11,7 +11,7 @@ from .db.models import Base
 from .db.database import engine
 
 from .router import (
-    users, authors, auth, books,
+    users, authors, auth, books, categories,
 )
 from .config import Settings
 
@@ -24,6 +24,7 @@ app.include_router(users.router)
 app.include_router(authors.router)
 app.include_router(auth.router)
 app.include_router(books.router)
+app.include_router(categories.router)
 
 
 @app.get("/")
