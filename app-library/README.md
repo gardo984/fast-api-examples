@@ -33,6 +33,10 @@ deactivate
 ```sh
 alembic upgrade head
 ```
+- To generate a new revision:
+```sh
+alembic revision --autogenerate -m "new table"
+```
 - To check the current revision:
 ```sh
 alembic current
