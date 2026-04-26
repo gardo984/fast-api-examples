@@ -4,6 +4,7 @@ from fastapi import (
     FastAPI, Request, Response, status, HTTPException,
     Depends,
 )
+from fastapi.middleware.cors import CORSMiddleware 
 # from faker import Faker
 # from fastapi.params import Body
 from pydantic import BaseModel
@@ -20,6 +21,22 @@ from .config import Settings
 
 app = FastAPI()
 # fake = Faker()
+
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+    "https://localhost",
+    "https://localhost:8080",
+    "https://www.google.com",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(users.router)
 app.include_router(authors.router)
