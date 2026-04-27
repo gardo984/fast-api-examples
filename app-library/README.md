@@ -14,6 +14,23 @@ Some of the purposes to create the current repo were to promote the knowledge an
 docker-compose build --no-cache api
 docker-compose up -d api && docker-compose run api migrate && docker-compose logs -f
 ```
+- [Optional], to load dev data:
+```sh
+docker-compose run api load_dev_data
+```
+- [Optional], to create superuser:
+```sh
+docker-compose run api create_superuser
+```
+- [Optional], to reset DB:
+```sh
+docker-compose down && \
+	docker-compose up -d api && sleep 3 && \
+	docker-compose run api migrate && \
+	docker-compose run api load_dev_data && \
+	docker-compose restart api && \
+	docker-compose logs -f
+```
 
 ### Locally
 

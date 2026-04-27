@@ -13,8 +13,11 @@ if [ $arg = "start" ]; then
 elif  [ $arg = "migrate" ]; then
     alembic upgrade head
 
+elif  [ $arg = "create_superuser" ]; then
+    python3 cli.py create-superuser
+
 elif  [ $arg = "load_dev_data" ]; then
-    echo "load_dev_data command"
+    python3 cli.py load-dev-data
 
 elif  [ $arg = "setup" ]; then
     alembic upgrade head && \

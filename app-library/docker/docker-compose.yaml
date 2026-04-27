@@ -22,6 +22,8 @@ services:
         - $PWD/app/:/usr/src/backend/app:rwx
         - $PWD/bin/entrypoint.sh:/usr/src/backend/entrypoint.sh:rwx
         - $PWD/bin/wait-for-it.sh:/usr/src/backend/wait-for-it.sh:rwx
+        - $PWD/alembic.ini:/usr/src/backend/alembic.ini:rwx
+        - $PWD/cli.py:/usr/src/backend/cli.py:rwx
         - $PWD/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:rw
         # - $PWD/docker/wsgi:/etc/wsgi:rw
     depends_on:

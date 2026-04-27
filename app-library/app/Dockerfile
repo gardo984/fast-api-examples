@@ -12,6 +12,7 @@ COPY --chown=app app ./${PROJECT_NAME}
 COPY --chown=app alembic ./alembic
 COPY requirements.txt ./requirements.txt
 COPY alembic.ini ./alembic.ini
+COPY cli.py ./cli.py
 COPY bin/entrypoint.sh ./entrypoint.sh
 COPY bin/wait-for-it.sh ./wait-for-it.sh
 
