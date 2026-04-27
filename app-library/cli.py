@@ -17,7 +17,7 @@ fake = Faker()
 def create_superuser(
     email: str = "admin@admin.com",
     password: str = "0e542d2231",
-    db_session = None,
+    db_session=None,
 ):
     """Create an admin user"""
     db = SessionLocal() if not db_session else db_session
@@ -27,6 +27,7 @@ def create_superuser(
 
 
 def _load_random_users():
+    """ Generate random users """
     db = SessionLocal()
     current_user = db.query(User).first()
     if not current_user:
@@ -51,11 +52,13 @@ def _load_random_users():
 
 
 def _load_categories():
+    """ Generate random categories """
     db = SessionLocal()
     items_to_create = []
     for item in range(20):
         current_user = fake.random_element(db.query(User).all())
-        db_category = Category(name=fake.job_male(), created_by_id=current_user.id,)
+        db_category = Category(name=fake.job_male(),
+                               created_by_id=current_user.id,)
         items_to_create.append(db_category)
 
     db.add_all(items_to_create)
@@ -64,6 +67,7 @@ def _load_categories():
 
 
 def _load_authors():
+    """ Generate random authors """
     db = SessionLocal()
     items_to_create = []
     for item in range(20):
@@ -83,6 +87,7 @@ def _load_authors():
 
 
 def _load_books():
+    """ Generate random books bound to category and author. """
     db = SessionLocal()
     items_to_create: List[Book] = []
     for item in range(20):
