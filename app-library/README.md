@@ -69,6 +69,10 @@ alembic revision --autogenerate -m "new table"
 ```sh
 alembic current
 ```
+- To check if there are pending revisions:
+```sh
+alembic check
+```
 - To run a specific revision:
 ```sh
 alembic upgrade <revision-id>
