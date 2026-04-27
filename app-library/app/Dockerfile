@@ -39,9 +39,8 @@ RUN apk update && \
 	mkdir -p /www && \
 	chown -R www:www /var/lib/nginx && \
 	chown -R www:www /www && \
-	mkdir -p /run/nginx/
-
-# mkdir -p /var/log/uwsgi/ && chown app:app /var/log/uwsgi/
+	mkdir -p /run/nginx/ /var/log/gunicorn/ && \
+	chown app:app /var/log/gunicorn/
 
 
 COPY --chown=www docker/nginx/nginx.conf /etc/nginx/nginx.conf

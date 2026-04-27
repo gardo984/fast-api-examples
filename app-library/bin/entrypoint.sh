@@ -4,7 +4,7 @@
 
 arg=$1
 APP_DIR=/usr/src/backend
-APP_PORT=8001
+APP_PORT=8000
 cd ${APP_DIR}
 
 if [ $arg = "start" ]; then
@@ -33,17 +33,19 @@ elif [ $arg = "nginx" ]; then
     echo 'rc_provide="loopback net"' >> /etc/rc.conf
     
     # process migrations and app setup
-    alembic upgrade head && \
-        gunicorn app.main:app --bind 0.0.0.0:8000 \
+    alembic upgrade head
+    # run gunicorn on the background
+    gunicorn app.main:app --bind 0.0.0.0:${APP_PORT} \
             --worker-class uvicorn.workers.UvicornWorker \
-            --workers 2
+            --workers 2 \
+            --access-logfile /var/log/gunicorn/access.log \
+            --error-logfile /var/log/gunicorn/error.log &
 
-    # start uwsgi in the background and nginx
-    #uwsgi --ini /etc/wsgi/uwsgi.ini &
+    # start nginx
     sudo openrc
     sleep 2 && \
         sudo rc-service nginx start && \
-        tail -f /var/log/nginx/*
+        tail -f /var/log/nginx/* /var/log/gunicorn/*
 
 elif [ $arg == "debug" ]; then
     exec /bin/sh

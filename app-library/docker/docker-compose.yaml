@@ -14,9 +14,10 @@ services:
     user: app
     tty: true
     entrypoint: ["./entrypoint.sh"]
-    command: start
+    command: nginx
     ports:
         - "8001:8001"
+        - "8000:8000"
     volumes:
         - $PWD/app/:/usr/src/backend/app:rwx
         - $PWD/bin/entrypoint.sh:/usr/src/backend/entrypoint.sh:rwx
