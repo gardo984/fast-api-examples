@@ -23,6 +23,8 @@ async def login(
     credentials: LoginCredentials,
     db: Session = Depends(get_db),
 ):
+    # import ipdb
+    # ipdb.set_trace()
     print(f"Url: {request.url}, method: {request.method}")
     print(f"Payload: {credentials.dict()}")
     user_exists = User.validate_users_existence(

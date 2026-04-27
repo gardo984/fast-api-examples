@@ -43,6 +43,7 @@ class User(BaseStructure):
     categories = relationship("Category", back_populates="created_by")
     books = relationship("Book", back_populates="created_by")
     purchases = relationship("Purchase", back_populates="created_by")
+    # likes = relationship("Likes", back_populates="user")
 
     @classmethod
     def authenticate_user(
@@ -148,6 +149,7 @@ class Book(BaseStructure):
     author = relationship("Author", back_populates="books")
     category = relationship("Category", back_populates="books")
     purchases = relationship("Purchase", back_populates="book")
+    # likes = relationship("Likes", back_populates="book")
 
 
 class Purchase(BaseStructure):
@@ -158,11 +160,14 @@ class Purchase(BaseStructure):
     book = relationship("Book", back_populates="purchases")
 
 
-class Likes(BaseStructure):
-    __tablename__ = "likes"
-    book_id = Column(Integer, ForeignKey("books.id"), nullable=False, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, primary_key=True)
+# class Likes(BaseStructure):
+#     __tablename__ = "likes"
 
-    # relationships
-    user = relationship("User", back_populates="likes")
-    book = relationship("Book", back_populates="likes")
+#     book_id = Column(Integer, ForeignKey("books.id"),
+#                      nullable=False, primary_key=True, )
+#     user_id = Column(Integer, ForeignKey("users.id"),
+#                      nullable=False, primary_key=True, )
+
+#     # relationships
+#     user = relationship("User", back_populates="likes")
+#     book = relationship("Book", back_populates="likes")

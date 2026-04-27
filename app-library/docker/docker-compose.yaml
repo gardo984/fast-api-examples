@@ -14,7 +14,7 @@ services:
     user: app
     tty: true
     entrypoint: ["./entrypoint.sh"]
-    command: nginx
+    command: start
     ports:
         - "8001:8001"
         - "8000:8000"
