@@ -4,11 +4,11 @@
 
 arg=$1
 APP_DIR=/usr/src/backend
-DEFAULT_PORT=8001
+APP_PORT=8001
 cd ${APP_DIR}
 
 if [ $arg = "start" ]; then
-    uvicorn app.main:app --reload --host 0.0.0.0 --port ${DEFAULT_PORT}
+    uvicorn app.main:app --reload --host 0.0.0.0 --port ${APP_PORT}
 
 elif  [ $arg = "migrate" ]; then
     alembic upgrade head
@@ -18,7 +18,7 @@ elif  [ $arg = "load_dev_data" ]; then
 
 elif  [ $arg = "setup" ]; then
     alembic upgrade head && \
-        uvicorn app.main:app --reload --host 0.0.0.0 --port ${DEFAULT_PORT}
+        uvicorn app.main:app --reload --host 0.0.0.0 --port ${APP_PORT}
 
 elif [ $arg = "unit_tests" ]; then
     echo "unit-tests command"
@@ -33,7 +33,10 @@ elif [ $arg = "nginx" ]; then
     echo 'rc_provide="loopback net"' >> /etc/rc.conf
     
     # process migrations and app setup
-    alembic upgrade head && uvicorn app.main:app
+    alembic upgrade head && \
+        gunicorn app.main:app --bind 0.0.0.0:8000 \
+            --worker-class uvicorn.workers.UvicornWorker \
+            --workers 2
 
     # start uwsgi in the background and nginx
     #uwsgi --ini /etc/wsgi/uwsgi.ini &
