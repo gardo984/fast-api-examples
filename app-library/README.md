@@ -7,6 +7,16 @@ Some of the purposes to create the current repo were to promote the knowledge an
 
 ## Setup
 
+### Docker
+
+- Start the db container:
+```sh
+docker-compose build --no-cache api
+docker-compose up -d api && docker-compose run api migrate && docker-compose logs -f
+```
+
+### Locally
+
 - Start the db container:
 ```sh
 docker-compose up -d db && docker-compose logs --tail=10 -f db
@@ -26,6 +36,7 @@ uvicorn app.main:app --reload --reload-exclude venv
 ```sh
 deactivate
 ```
+
 
 ## DB Migrations
 

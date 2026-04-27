@@ -8,15 +8,16 @@ ARG UID
 RUN adduser --disabled-password -u ${UID} -s /bin/ash app && \
 	chown app:app ${APP_DIR}
 
-COPY --chown=app app ./
-COPY --chown=app alembic ./
-COPY --chown=app requirements.txt ./
-COPY bin/entrypoint.sh ${PROJECT_NAME}/entrypoint.sh
-COPY bin/wait-for-it.sh ${PROJECT_NAME}/wait-for-it.sh
+COPY --chown=app app ./${PROJECT_NAME}
+COPY --chown=app alembic ./alembic
+COPY requirements.txt ./requirements.txt
+COPY alembic.ini ./alembic.ini
+COPY bin/entrypoint.sh ./entrypoint.sh
+COPY bin/wait-for-it.sh ./wait-for-it.sh
 
 ## install sudoers and enable sudo without password prompt
 
-RUN chmod +x app/entrypoint.sh ${PROJECT_NAME}/wait-for-it.sh && \
+RUN chmod +x ./entrypoint.sh ./wait-for-it.sh && \
 	apk add sudo && \
 	sed -e 's/^# \(%wheel.*NOPASSWD*\)/\1/g' -i /etc/sudoers && \
 	addgroup app wheel

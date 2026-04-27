@@ -19,8 +19,8 @@ services:
         - "8001:8001"
     volumes:
         - $PWD/app/:/usr/src/backend/app:rwx
-        - $PWD/bin/entrypoint.sh:/usr/src/backend/app/entrypoint.sh:rwx
-        - $PWD/bin/wait-for-it.sh:/usr/src/backend/app/wait-for-it.sh:rwx
+        - $PWD/bin/entrypoint.sh:/usr/src/backend/entrypoint.sh:rwx
+        - $PWD/bin/wait-for-it.sh:/usr/src/backend/wait-for-it.sh:rwx
         - $PWD/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:rw
         # - $PWD/docker/wsgi:/etc/wsgi:rw
     depends_on:

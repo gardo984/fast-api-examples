@@ -26,15 +26,14 @@ elif [ $arg = "unit_tests" ]; then
 elif  [ $arg = "deploy" ]; then
     # for test purposes
     alembic upgrade head && \
-        uvicorn app.main:app --reload --host 0.0.0.0 --port ${DEFAULT_PORT}
+        uvicorn app.main:app
 
 elif [ $arg = "nginx" ]; then
     # the following sentence is for a bug that happen in k8s
     echo 'rc_provide="loopback net"' >> /etc/rc.conf
     
     # process migrations and app setup
-    # alembic upgrade head &&
-    uvicorn app.main:app
+    alembic upgrade head && uvicorn app.main:app
 
     # start uwsgi in the background and nginx
     #uwsgi --ini /etc/wsgi/uwsgi.ini &
