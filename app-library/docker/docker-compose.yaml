@@ -1,4 +1,33 @@
 services:
+  api:
+    image: "malazo/fastapi-app-library:${IMAGE_TAG-latest}"
+    platform: linux/amd64
+    build:
+      target: ${TARGET-dev}
+      context: $PWD/
+      dockerfile: $PWD/app/Dockerfile
+      args:
+          # for build purposes set your UID value here
+          UID: ${UID-1000}
+    restart: on-failure
+    env_file: $PWD/config/.backend_env
+    user: app
+    tty: true
+    entrypoint: ["./entrypoint.sh"]
+    command: start
+    ports:
+        - "8001:8001"
+    volumes:
+        - $PWD/app/:/usr/src/backend/app:rwx
+        - $PWD/bin/entrypoint.sh:/usr/src/backend/app/entrypoint.sh:rwx
+        - $PWD/bin/wait-for-it.sh:/usr/src/backend/app/wait-for-it.sh:rwx
+        - $PWD/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:rw
+        # - $PWD/docker/wsgi:/etc/wsgi:rw
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+    - fastapi_library
   db:
     image: "mariadb:10.10"
     restart: on-failure
@@ -9,3 +38,12 @@ services:
     - $PWD/bin/wait-for-it.sh:/tmp/wait-for-it.sh:ro
     healthcheck:
       test: ["CMD-SHELL", "/tmp/wait-for-it.sh -h localhost -p 3306 || exit 1"]
+    networks:
+    - fastapi_library
+
+    
+networks:
+  fastapi_library:
+    name: fastapi-library
+    driver: bridge
+    external: false

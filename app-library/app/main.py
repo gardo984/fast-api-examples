@@ -27,7 +27,6 @@ origins = [
     "http://localhost:8080",
     "https://localhost",
     "https://localhost:8080",
-    "https://www.google.com",
 ]
 
 app.add_middleware(

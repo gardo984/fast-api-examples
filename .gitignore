@@ -208,3 +208,5 @@ __marimo__/
 
 # omit the env_local
 app-library/app/.env_local
+app-library/app/entrypoint.sh
+app-library/app/wait-for-it.sh
