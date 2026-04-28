@@ -5,10 +5,10 @@ from fastapi import (
     HTTPException,
 )
 from sqlalchemy.orm import Session
-from ..db.database import get_db
-from ..db.models import User
-from ..schemas import LoginCredentials, LoginResponse
-from ..oauth2 import create_access_token
+from app.db.database import get_db
+from app.db.models import User
+from app.schemas import LoginCredentials, LoginResponse
+from app.oauth2 import create_access_token
 
 router = APIRouter(tags=["Authentication"])
 

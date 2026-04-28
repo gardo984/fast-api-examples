@@ -14,15 +14,15 @@ Some of the purposes to create the current repo were to promote the knowledge an
 docker-compose build --no-cache api
 docker-compose up -d api && docker-compose run api migrate && docker-compose logs -f
 ```
-- [Optional], to load dev data:
+- **[Optional]**, to load dev data:
 ```sh
 docker-compose run api load_dev_data
 ```
-- [Optional], to create superuser:
+- **[Optional]**, to create superuser:
 ```sh
 docker-compose run api create_superuser
 ```
-- [Optional], to reset DB:
+- **[Optional]**, to reset DB:
 ```sh
 docker-compose down && \
 	docker-compose up -d api && sleep 3 && \
@@ -33,6 +33,8 @@ docker-compose down && \
 ```
 
 ### Locally
+
+#### Initialize app
 
 - Start the db container:
 ```sh
@@ -55,7 +57,7 @@ deactivate
 ```
 
 
-## DB Migrations
+#### DB Migrations
 
 - Run the app migrations:
 ```sh

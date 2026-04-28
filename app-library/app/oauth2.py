@@ -6,10 +6,10 @@ from jwt.exceptions import InvalidTokenError
 from fastapi import Request, Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from .db.models import User
-from .db.database import get_db
-from .schemas import TokenData
-from .config import settings
+from app.db.models import User
+from app.db.database import get_db
+from app.schemas import TokenData
+from app.config import settings
 
 SECRET_KEY = settings.jwt_secret_key
 ALGORITHM = settings.jwt_algorithm

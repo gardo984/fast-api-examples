@@ -3,9 +3,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import text
 from datetime import datetime
 from sqlalchemy.orm import Session
-from .database import Base
+from app.db.database import Base
 from typing import Union, List, Tuple, Any, Optional
-from ..utils import hash_password, verify_password_hash
+from app.utils import hash_password, verify_password_hash
 
 
 class BaseStructure(Base):

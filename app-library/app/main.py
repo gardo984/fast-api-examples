@@ -8,13 +8,14 @@ from fastapi.middleware.cors import CORSMiddleware
 # from faker import Faker
 # from fastapi.params import Body
 from pydantic import BaseModel
-from .db.models import Base
-from .db.database import engine
+from app.db.models import Base
+from app.db.database import engine
+
 
 from .router import (
     users, authors, auth, books, categories,
 )
-from .config import Settings
+from app.config import Settings
 
 # actually handled by alembic ORM manager
 # Base.metadata.create_all(bind=engine)

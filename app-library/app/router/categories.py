@@ -5,19 +5,19 @@ from fastapi import (
     APIRouter,
 )
 from sqlalchemy.orm import Session
-from ..schemas import (
+from app.schemas import (
     CategoryCreate,
     CategoryUpdate,
     CategoryResponse,
 )
 
-from ..db.database import get_db, engine
-from ..db.models import (
+from app.db.database import get_db, engine
+from app.db.models import (
     Base,
     Category,
     User,
 )
-from ..oauth2 import get_current_active_user
+from app.oauth2 import get_current_active_user
 
 
 router = APIRouter(
