@@ -3,6 +3,7 @@ from fastapi import status
 from typing import List
 from faker import Faker
 from app.db.models import User
+from tests.conftest import user_credentials
 
 
 class TestUser:
@@ -79,6 +80,26 @@ class TestUser:
 
         response = client.delete(f"/users/{user_id}/")
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    @pytest.mark.parametrize(
+        "method,payload,status_code", [
+            ("post", user_credentials, status.HTTP_200_OK),
+            ("patch", user_credentials, status.HTTP_405_METHOD_NOT_ALLOWED),
+            ("put", user_credentials, status.HTTP_405_METHOD_NOT_ALLOWED),
+            ("post", dict(email="test2", password="12345678"),
+             status.HTTP_422_UNPROCESSABLE_CONTENT),
+            ("post", dict(email="test2", password="12345678"),
+             status.HTTP_422_UNPROCESSABLE_CONTENT),
+        ])
+    def test_user_login(
+        self, client, method, payload, status_code,
+    ):
+        http_method = getattr(client, method)
+        response = http_method("/login/", json=payload)
+        assert response.status_code == status_code
+
+        if method == "post" and response.status_code == status.HTTP_200_OK:
+            assert "access_token" in response.json()
 
     # def test_user_update(self, client, db_session, load_users):
     #     user_instance = db_session.query(User).where(
