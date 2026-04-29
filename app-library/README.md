@@ -5,6 +5,15 @@ The following repo will have information about an app oriented to a Library.
 
 Some of the purposes to create the current repo were to promote the knowledge and practice of `FastApi`.
 
+Glossary:
+
+- [Setup](#setup)
+	- [Docker](#docker)
+	- [Locally](#locally)
+		- [Initialize app](#initialize-app)
+		- [DB Migrations](#db-migrations)
+- [Unit Tests](#unit-tests)
+
 ## Setup
 
 ### Docker
@@ -86,4 +95,8 @@ alembic history
 
 ## Unit Tests
 
-
+- To run all unit tests:
+```sh
+pytest -v tests/
+```
+![Unit tests Outcome](others/unit-tests.png)
