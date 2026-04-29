@@ -3,27 +3,10 @@ from typing import List
 from faker import Faker
 from fastapi import status
 from app.db.models import Author
+from tests.test_main import AppFixtures
 
 
-class TestAuthors:
-
-    @pytest.fixture()
-    def load_authors(self, db_session) -> List[Author]:
-        fake = Faker()
-        items_to_create = [
-            Author(
-                name=fake.name(),
-                email=fake.email(),
-                age=fake.random_int(min=20,max=100),
-                active=True,
-            )
-            for _ in range(10)
-        ]
-        db_session.add_all(items_to_create)
-        db_session.commit()
-        for instance in items_to_create:
-            db_session.refresh(instance)
-        return items_to_create
+class TestAuthors(AppFixtures):
 
     @pytest.mark.parametrize(
         "payload, status_code", [
@@ -63,7 +46,11 @@ class TestAuthors:
             assert response.json()["id"] == author_id
 
     def test_author_update(self, client, db_session, load_authors):
-        author = load_authors[0]
+        author = db_session.query(Author).where(
+            Author.id == load_authors[0]
+        ).first()
+        assert author is not None
+
         client._authenticate()
         new_name = f"{author.name}_test"
         payload = dict(
@@ -85,7 +72,11 @@ class TestAuthors:
         assert author.active is False and author.name == new_name
 
     def test_author_delete(self, client, db_session, load_authors):
-        author = load_authors[0]
+        author = db_session.query(Author).where(
+            Author.id == load_authors[0]
+        ).first()
+        assert author is not None
+
         author_id = author.id
         client._authenticate()
         response = client.delete(f"/author/{author_id}/")

@@ -3,22 +3,10 @@ from typing import List
 from faker import Faker
 from fastapi import status
 from app.db.models import Category
+from tests.test_main import AppFixtures
 
 
-class TestCategories:
-
-    @pytest.fixture()
-    def load_categories(self, db_session) -> List[Category]:
-        fake = Faker()
-        items_to_create = [
-            Category(name=fake.name(), active=True)
-            for _ in range(10)
-        ]
-        db_session.add_all(items_to_create)
-        db_session.commit()
-        for instance in items_to_create:
-            db_session.refresh(instance)
-        return items_to_create
+class TestCategories(AppFixtures):
 
     @pytest.mark.parametrize(
         "payload, status_code", [
@@ -55,7 +43,11 @@ class TestCategories:
             assert response.json()["id"] == category_id
 
     def test_category_update(self, client, db_session, load_categories):
-        category = load_categories[0]
+        category = db_session.query(Category).where(
+            Category.id == load_categories[0]
+        ).first()
+        assert category is not None
+
         client._authenticate()
         new_name = f"{category.name}_test"
         payload = dict(name=new_name, active=(not category.active))
@@ -72,7 +64,11 @@ class TestCategories:
         assert category.active is False and category.name == new_name
 
     def test_category_delete(self, client, db_session, load_categories):
-        category = load_categories[0]
+        category = db_session.query(Category).where(
+            Category.id == load_categories[0]
+        ).first()
+        assert category is not None
+
         category_id = category.id
         client._authenticate()
         response = client.delete(f"/categories/{category_id}/")

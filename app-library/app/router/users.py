@@ -109,16 +109,16 @@ async def user_delete(
     print(f"Url: {request.url}, method: {request.method}")
     print(f"Path args user_id: {user_id}")
 
-    user = db.query(User).where(User.id == user_id)
-    if not user.first():
+    stmt = db.query(User).where(User.id == user_id)
+    if not stmt.first():
         print(f"User does not exist userId:{user_id}")
         raise HTTPException(
             detail=f"User does not exist",
             status_code=status.HTTP_404_NOT_FOUND,
         )
 
-    user_email = user.email
-    user.delete(synchronize_session=False)
+    user_email = stmt.first().email
+    stmt.delete(synchronize_session=False)
     db.commit()
     print(f"User removed successfully userId:{user_id}, email={user_email}")
     return {}
