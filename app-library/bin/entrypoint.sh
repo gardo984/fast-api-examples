@@ -24,7 +24,7 @@ elif  [ $arg = "setup" ]; then
         uvicorn app.main:app --reload --host 0.0.0.0 --port ${APP_PORT}
 
 elif [ $arg = "unit_tests" ]; then
-    echo "unit-tests command"
+    pytest -v tests/
 
 elif  [ $arg = "deploy" ]; then
     # for test purposes
