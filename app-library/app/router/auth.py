@@ -26,7 +26,7 @@ async def login(
     # import ipdb
     # ipdb.set_trace()
     print(f"Url: {request.url}, method: {request.method}")
-    print(f"Payload: {credentials.dict()}")
+    print(f"Payload: {credentials.model_dump()}")
     user_exists = User.validate_users_existence(
         db, [credentials.email,]
     )

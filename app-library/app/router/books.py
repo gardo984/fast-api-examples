@@ -96,7 +96,7 @@ async def book_create(
     if not isinstance(payload, List):
         payload = [payload]
 
-    decoded_data = [item.dict() for item in payload]
+    decoded_data = [item.model_dump() for item in payload]
     print(f"Payload: {decoded_data}")
     for item in payload:
         category_instance = Category.validate_existence(item.category_id, db)
@@ -142,7 +142,7 @@ async def book_update(
     current_user: User = Depends(get_current_active_user),
 ):
     print(f"Url: {request.url}, method: {request.method}")
-    print(f"Payload: {payload.dict()}")
+    print(f"Payload: {payload.model_dump()}")
     instance = db.query(Book).where(Book.id == book_id).first()
     if not instance:
         print(f"Book does not exist bookId: {book_id}")
@@ -151,7 +151,7 @@ async def book_update(
             detail="Book does no exist",
         )
 
-    update_data = payload.dict()
+    update_data = payload.model_dump()
     for key, value in update_data.items():
         setattr(instance, key, value)
 

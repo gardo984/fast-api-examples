@@ -1,4 +1,7 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
+from sqlalchemy import (
+    Column, Integer, String, DateTime,
+    Boolean, ForeignKey, Select,
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import text
 from datetime import datetime
@@ -68,7 +71,7 @@ class User(BaseStructure):
         if not isinstance(user_list, List):
             user_list = [user_list]
 
-        stmt = db.query(cls.email).where(cls.email.in_(user_list))
+        stmt = Select(cls.email).where(cls.email.in_(user_list))
         outcome = db.execute(stmt).scalars().all()
         return outcome
 
@@ -79,12 +82,12 @@ class User(BaseStructure):
     def create_users(
         cls, db: Session,
         users: List,
-        current_user: Optional[Any] = None,
+        current_user: Optional["UserCreate"] = None,
     ) -> List:
         users_to_create: List[cls] = []
         for user_data in users:
             user_data.password = cls.get_password_hash(user_data.password)
-            payload = user_data.dict()
+            payload = user_data.model_dump()
             if current_user:
                 payload.update({"created_by_id": current_user.id})
             db_user = cls(**payload)

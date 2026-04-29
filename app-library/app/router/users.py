@@ -41,7 +41,7 @@ async def user_create(
     if not isinstance(payload, List):
         payload = [payload]
 
-    decoded_data = [item.dict() for item in payload]
+    decoded_data = [item.model_dump() for item in payload]
     print(f"Payload: {decoded_data}")
     user_list = list(set([x.email.lower() for x in payload]))
     user_exists = User.validate_users_existence(db, user_list)
