@@ -7,7 +7,7 @@ A collection of backend implementations in different languages and frameworks.
 | Animal (Framework) | Language | Habitat (Endpoint) |
 |-------------------|----------|--------------------|
 | 🐍 FastAPI | Python | `/app-library` |
-| 🐱‍👤 NestJS | TypeScript | `/api/shopping-cart` |
+| 🐱‍👤 NestJS | TypeScript | `/api/app-online-store` |
 
 ## Why a zoo?
 
