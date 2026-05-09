@@ -11,4 +11,4 @@ A collection of backend implementations in different languages and frameworks.
 
 ## Why a zoo?
 
-Because every framework has its own personality — some are fast and sleek (FastAPI), some are structured and architectural (NestJS), some are minimal and powerful (Gin). Let them all live together.
+Because every framework has its own personality — some are fast and sleek (FastAPI), some are structured and architectural (NestJS), some are minimal. Let them all live together.
