@@ -1,4 +1,9 @@
-import { Controller, Get, Render } from '@nestjs/common';
+import {
+	Controller,
+	Get,
+	Render,
+	Param,
+} from '@nestjs/common';
 
 @Controller('/products')
 export class ProductsController {
@@ -39,9 +44,21 @@ export class ProductsController {
 		let viewData = {};
 		viewData["title"] = "Products - Online Store";
 		viewData["subtitle"] = "List of Products";
-	    viewData["products"] = ProductsController.products;
-	    return {
-	      viewData: viewData,
-	    }
+		viewData["products"] = ProductsController.products;
+		return {
+			viewData: viewData,
+		}
+	}
+
+	@Get("/:id")
+	@Render("products/show")
+	show(@Param() params) {
+		let viewData = {};
+		viewData["title"] = "Products - Online Store";
+		viewData["subtitle"] = "List of Products";
+		viewData["product"] = ProductsController.products[params.id-1]
+		return {
+			viewData: viewData,
+		}
 	}
 }
