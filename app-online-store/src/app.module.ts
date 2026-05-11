@@ -5,11 +5,18 @@ import {
   TypeOrmModule
 } from '@nestjs/typeorm';
 import { typeOrmConfig } from './typeorm.config';
-/*import { AppService } from './app.service';*/
+import { ProductsService } from './models/products.service';
+import { Product } from './models/products.entity';
+import { TypeORMError } from 'typeorm';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(typeOrmConfig),],
+  imports: [
+    TypeOrmModule.forRoot(typeOrmConfig),
+    TypeOrmModule.forFeature([Product,]),
+  ],
   controllers: [AppController, ProductsController],
-  providers: [],
+  providers: [
+    ProductsService,
+  ],
 })
 export class AppModule {}
